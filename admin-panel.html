@@ -334,17 +334,18 @@
                         <div class="inquiries-header">
                             <h1>Customer Inquiries</h1>
                             <div class="filter-controls">
-                                <select id="statusFilter">
-                                    <option value="all">All Status</option>
-                                    <option value="new">New</option>
-                                    <option value="contacted">Contacted</option>
-                                    <option value="processing">Processing</option>
-                                    <option value="completed">Completed</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                                <button class="btn btn-secondary" onclick="refreshInquiries()">
-                                    <i class="fas fa-sync-alt"></i> Refresh
-                                </button>
+                               <select id="statusFilter">
+  <option value="all">All</option>
+  <option value="pending">Pending</option>
+  
+  <option value="completed">Completed</option>
+</select>
+
+                            
+                                <input type="text" id="searchInquiries"
+ placeholder="Search inquiries..."
+ class="search-input">
+
                             </div>
                         </div>
                         
@@ -427,43 +428,29 @@
             </main>
         </div>
     </div>
+<!-- ================= FIREBASE (FINAL FIX) ================= -->
 
-    <!-- Firebase SDK v9+ COMPATIBILITY VERSION -->
-    <!-- NO FIREBASE STORAGE SCRIPT - We're using ImageDB instead -->
-     <!-- Firebase scripts -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    
-   
-    <!-- NO FIREBASE-STORAGE SCRIPT -->
-    
-    <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
-            authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
-            projectId: "kailash-house-exim-cfcb1",
-            storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
-            messagingSenderId: "912462708660",
-            appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1",
-            measurementId: "G-XQN54W4R8E"
-        };
-        
-        // Initialize Firebase (NO STORAGE)
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        // NO storage = firebase.storage();
-        
-        // Simple password protection
-        const ADMIN_PASSWORD = 'kailash123';
-        
-        // ===== IMAGEDB CONFIGURATION =====
-      
-    </script>
-     <script src="js/admin.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
+    authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
+    projectId: "kailash-house-exim-cfcb1",
+    storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
+    messagingSenderId: "912462708660",
+    appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const ADMIN_PASSWORD = "kailash123";
+</script>
+
+<script src="js/admin.js"></script>
+
     
     <!-- Your JavaScript will be loaded here separately -->
 </body>

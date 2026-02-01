@@ -1,25 +1,68 @@
 // ===============================
-// Admin Panel JS (FINAL – EDIT + DELETE IMAGE)
+// Admin Panel JS (PRO CRM – FINAL ALL FIXED)
 // ===============================
 
 let productsListener = null;
 let inquiriesListener = null;
 let editingProductId = null;
-let oldDeleteUrl = null;
+
+// pagination
+let currentInquiryPage = 1;
+const INQUIRIES_PER_PAGE = 3;
+let filteredInquiries = [];
+let allInquiries = [];
 
 const DEFAULT_IMAGE =
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80";
 
-// IMGBB
-const IMGBB_API_KEY = "c2a57968ac9e3f5cf23caea37d08df2e";
-const IMGBB_UPLOAD_URL = "https://api.imgbb.com/1/upload";
+// elements
+let productsTableBody;
+let inquiriesList;
+let totalProductsCount;
+let totalInquiriesCount;
+let inquiryCountBadge;
 
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
+  productsTableBody = document.getElementById("productsTableBody");
+  inquiriesList = document.getElementById("inquiriesList");
+  totalProductsCount = document.getElementById("totalProductsCount");
+  totalInquiriesCount = document.getElementById("totalInquiriesCount");
+  inquiryCountBadge = document.getElementById("inquiryCount");
+
   setupPasswordProtection();
   setupTabNavigation();
   setupForms();
   setupImagePreview();
+
+  // filter
+  document.getElementById("statusFilter")?.addEventListener("change", e => {
+    const v = e.target.value;
+
+    if (v === "all") filteredInquiries = [...allInquiries];
+    else if (v === "pending") filteredInquiries = allInquiries.filter(q => q.status !== "completed");
+    else if (v === "completed") filteredInquiries = allInquiries.filter(q => q.status === "completed");
+    else if (v === "unread") filteredInquiries = allInquiries.filter(q => !q.read);
+
+    currentInquiryPage = 1;
+    renderPaginatedInquiries();
+  });
+
+  // search
+  document.getElementById("searchInquiries")?.addEventListener("input", e => {
+    const v = e.target.value.toLowerCase();
+    filteredInquiries = allInquiries.filter(q =>
+      q.name?.toLowerCase().includes(v) ||
+      q.productName?.toLowerCase().includes(v) ||
+      q.phone?.includes(v) ||
+      q.message?.toLowerCase().includes(v)
+    );
+    currentInquiryPage = 1;
+    renderPaginatedInquiries();
+  });
+
+  const hash = location.hash.replace("#", "");
+  switchTab(hash || "dashboard");
 });
 
 // ===============================
@@ -28,16 +71,12 @@ function setupPasswordProtection() {
     if (adminPassword.value === ADMIN_PASSWORD) {
       passwordScreen.style.display = "none";
       adminPanel.style.display = "block";
-      initializeAdminData();
+      loadProducts();
+      loadInquiries();
     } else {
       passwordError.textContent = "❌ Incorrect password";
     }
   };
-}
-
-function initializeAdminData() {
-  loadProducts();
-  loadInquiries();
 }
 
 // ===============================
@@ -53,24 +92,19 @@ function setupTabNavigation() {
 function switchTab(tab) {
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
   document.getElementById(tab + "-tab")?.classList.add("active");
-
-  if (tab === "products") loadProducts();
-  if (tab === "inquiries") loadInquiries();
+  setActiveNav(tab);
+  location.hash = tab;
 }
 
 // ===============================
 function setupImagePreview() {
   productImage?.addEventListener("change", () => {
-    const file = productImage.files[0];
-    if (!file) return;
-
     const reader = new FileReader();
     reader.onload = e => imagePreview.innerHTML = `<img src="${e.target.result}">`;
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(productImage.files[0]);
   });
 }
 
-// ===============================
 function setupForms() {
   addProductForm?.addEventListener("submit", async e => {
     e.preventDefault();
@@ -79,99 +113,9 @@ function setupForms() {
 }
 
 // ===============================
-// IMGBB UPLOAD
-// ===============================
-async function uploadToIMGBB(file) {
-  const base64 = await fileToBase64(file);
-
-  const fd = new FormData();
-  fd.append("key", IMGBB_API_KEY);
-  fd.append("image", base64.split(",")[1]);
-
-  const res = await fetch(IMGBB_UPLOAD_URL, { method: "POST", body: fd });
-  const data = await res.json();
-
-  if (!data.success) throw new Error("Image upload failed");
-
-  return {
-    url: data.data.url,
-    delete_url: data.data.delete_url
-  };
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-// ===============================
-// ADD / EDIT PRODUCT (ONE FUNCTION)
-// ===============================
-async function handleSaveProduct(form) {
-  const btn = form.querySelector("button[type='submit']");
-  btn.disabled = true;
-  btn.innerText = editingProductId ? "Updating..." : "Saving...";
-
-  try {
-    let imageUrl = DEFAULT_IMAGE;
-    let deleteUrl = null;
-
-    if (productImage.files[0]) {
-      const upload = await uploadToIMGBB(productImage.files[0]);
-      imageUrl = upload.url;
-      deleteUrl = upload.delete_url;
-
-      // 🔥 delete old image if editing
-      if (oldDeleteUrl) {
-        fetch(oldDeleteUrl).catch(() => {});
-      }
-    }
-
-    const data = {
-      name: productName.value,
-      category: productCategory.value,
-      description: productDescription.value,
-      image: imageUrl,
-      delete_url: deleteUrl,
-      specs: productSpecs.value.split(",").map(s => s.trim()).filter(Boolean),
-      status: productStatus.value,
-      updatedAt: new Date()
-    };
-
-    const ref = firebase.firestore().collection("products");
-
-    if (editingProductId) {
-      await ref.doc(editingProductId).update(data);
-      alert("✅ Product updated");
-    } else {
-      const id = Date.now().toString();
-      await ref.doc(id).set({ ...data, id, createdAt: new Date() });
-      alert("✅ Product added");
-    }
-
-    form.reset();
-    editingProductId = null;
-    oldDeleteUrl = null;
-    imagePreview.innerHTML = "<i class='fas fa-image'></i><span>No image</span>";
-    switchTab("products");
-
-  } catch (e) {
-    alert("❌ " + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerText = "Save Product";
-  }
-}
-
-// ===============================
-// LOAD PRODUCTS
+// PRODUCTS
 // ===============================
 function loadProducts() {
-  const tbody = productsTableBody;
   if (productsListener) productsListener();
 
   productsListener = firebase.firestore().collection("products")
@@ -180,66 +124,184 @@ function loadProducts() {
       snap.forEach(doc => {
         const p = doc.data();
         html += `
-        <tr>
-          <td><img src="${p.image || DEFAULT_IMAGE}" width="60" height="60"></td>
-          <td>${p.name}</td>
-          <td>${p.category}</td>
-          <td>${p.description}</td>
-          <td>${p.status}</td>
-          <td>
-            <button onclick="editProduct('${doc.id}')">✏️</button>
-            <button onclick="deleteProduct('${doc.id}')">🗑</button>
-          </td>
-        </tr>`;
+          <tr>
+            <td><img src="${p.image || DEFAULT_IMAGE}" width="60"></td>
+            <td>${p.name}</td>
+            <td>${p.category}</td>
+            <td><span class="status ${p.status}">${p.status}</span></td>
+            <td>
+              <button onclick="editProduct('${doc.id}')">✏️</button>
+              <button onclick="deleteProduct('${doc.id}')">🗑</button>
+            </td>
+          </tr>`;
       });
-      tbody.innerHTML = html || `<tr><td colspan="6">No products</td></tr>`;
+
+      productsTableBody.innerHTML = html || `<tr><td colspan="5">No products</td></tr>`;
       totalProductsCount.textContent = snap.size;
     });
 }
 
 // ===============================
-// EDIT PRODUCT
-// ===============================
-async function editProduct(id) {
-  const doc = await firebase.firestore().collection("products").doc(id).get();
-  const p = doc.data();
-
-  editingProductId = id;
-  oldDeleteUrl = p.delete_url || null;
-
-  productName.value = p.name;
-  productCategory.value = p.category;
-  productDescription.value = p.description;
-  productSpecs.value = (p.specs || []).join(", ");
-  productStatus.value = p.status;
-
-  imagePreview.innerHTML = `<img src="${p.image}">`;
-
-  switchTab("add-product");
-}
-
-// ===============================
-// DELETE PRODUCT + DELETE IMAGE
-// ===============================
-async function deleteProduct(id) {
-  if (!confirm("Delete product?")) return;
-
-  const ref = firebase.firestore().collection("products").doc(id);
-  const snap = await ref.get();
-  const p = snap.data();
-
-  if (p?.delete_url) {
-    fetch(p.delete_url).catch(() => {});
-  }
-
-  await ref.delete();
-  alert("Deleted");
-}
-
+// INQUIRIES (CRM)
 // ===============================
 function loadInquiries() {
   if (inquiriesListener) inquiriesListener();
 
-  inquiriesListener = firebase.firestore().collection("inquiries")
-    .onSnapshot(() => {});
+  inquiriesListener = firebase.firestore()
+    .collection("inquiries")
+    .orderBy("createdAt", "desc")
+    .onSnapshot(snap => {
+      allInquiries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      filteredInquiries = [...allInquiries];
+      currentInquiryPage = 1;
+
+      renderPaginatedInquiries();
+      updateDashboard(allInquiries);
+      renderRecentInquiries(allInquiries);
+    });
+}
+
+// ===============================
+function renderPaginatedInquiries() {
+  const start = (currentInquiryPage - 1) * INQUIRIES_PER_PAGE;
+  const end = start + INQUIRIES_PER_PAGE;
+  renderInquiries(filteredInquiries.slice(start, end));
+  renderPaginationControls();
+}
+
+// ===============================
+function renderInquiries(data) {
+  let html = "";
+  let pending = 0;
+
+  data.forEach(q => {
+    if (q.status !== "completed") pending++;
+
+    const phone = q.phone?.replace(/\D/g, "");
+    const wpMsg = encodeURIComponent(`Hello ${q.name}, regarding ${q.productName}`);
+
+    html += `
+      <div class="inquiry-item ${q.read ? "" : "unread"}">
+        <div class="inquiry-header">
+          <div class="inquiry-meta">
+            <h4>${q.productName}</h4>
+            <div class="inquiry-date">${q.createdAt?.toDate().toLocaleString()}</div>
+          </div>
+          <div class="inquiry-actions">
+            ${q.status !== "completed" ? `
+              <button class="btn btn-small btn-secondary" onclick="markAsRead('${q.id}')">Mark Read</button>
+              <button class="btn btn-small btn-primary" onclick="markCompleted('${q.id}')">Completed</button>
+            ` : `<span class="status completed">Completed</span>`}
+            <a class="btn btn-small btn-secondary" target="_blank"
+               href="https://wa.me/${phone}?text=${wpMsg}">WhatsApp</a>
+          </div>
+        </div>
+        <div class="inquiry-body">
+          <p><strong>Name:</strong> ${q.name}</p>
+          <p><strong>Phone:</strong> ${q.phone}</p>
+          <p><strong>Qty:</strong> ${q.qty}</p>
+          <p><strong>Message:</strong> ${q.message || "-"}</p>
+        </div>
+      </div>`;
+  });
+
+  inquiriesList.innerHTML = html || `<div class="empty-state">No inquiries</div>`;
+  totalInquiriesCount.textContent = filteredInquiries.length;
+  inquiryCountBadge.textContent = pending;
+}
+
+// ===============================
+function renderPaginationControls() {
+  const totalPages = Math.ceil(filteredInquiries.length / INQUIRIES_PER_PAGE);
+  if (totalPages <= 1) return;
+
+  inquiriesList.insertAdjacentHTML("beforeend", `
+    <div class="pagination">
+      <button ${currentInquiryPage === 1 ? "disabled" : ""} onclick="prevInquiryPage()">Prev</button>
+      <span>Page ${currentInquiryPage} / ${totalPages}</span>
+      <button ${currentInquiryPage === totalPages ? "disabled" : ""} onclick="nextInquiryPage()">Next</button>
+    </div>
+  `);
+}
+
+function nextInquiryPage() {
+  currentInquiryPage++;
+  renderPaginatedInquiries();
+}
+function prevInquiryPage() {
+  currentInquiryPage--;
+  renderPaginatedInquiries();
+}
+
+// ===============================
+function markAsRead(id) {
+  firebase.firestore().collection("inquiries").doc(id).update({
+    read: true,
+    status: "pending"
+  });
+}
+
+function markCompleted(id) {
+  firebase.firestore().collection("inquiries").doc(id).update({
+    status: "completed",
+    read: true,
+    completedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+// ===============================
+function updateDashboard(data) {
+  document.getElementById("totalInquiriesCount").innerText = data.length;
+  document.getElementById("pendingInquiriesCount").innerText =
+    data.filter(q => q.status !== "completed").length;
+  document.getElementById("completedInquiriesCount").innerText =
+    data.filter(q => q.status === "completed").length;
+}
+
+// ===============================
+function renderRecentInquiries(data) {
+  const list = document.getElementById("recentInquiriesList");
+
+  const recent = data.filter(q => !q.read && q.status !== "completed").slice(0, 3);
+
+  if (!recent.length) {
+    list.innerHTML = `<div class="empty-state"><p>No pending inquiries 🎉</p></div>`;
+    return;
+  }
+
+  list.innerHTML = recent.map(q => `
+    <div class="recent-item" onclick="switchTab('inquiries')">
+      <div class="recent-info">
+        <h4>${q.productName}</h4>
+        <p>${q.name} • ${q.phone}</p>
+        <span class="recent-date">${q.createdAt?.toDate().toLocaleString()}</span>
+      </div>
+      <div class="recent-status">
+        <span class="status ${q.status || "new"}">${q.status || "new"}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ===============================
+function setActiveNav(tab) {
+  document.querySelectorAll(".sidebar-nav a").forEach(a => a.classList.remove("active"));
+  document.querySelector(`.sidebar-nav a[data-tab="${tab}"]`)?.classList.add("active");
+}
+
+// ===============================
+function openInquiryFilter(type) {
+  switchTab("inquiries");
+  const select = document.getElementById("statusFilter");
+
+  if (type === "pending") {
+    select.value = "pending";
+    filteredInquiries = allInquiries.filter(q => q.status !== "completed");
+  } else {
+    select.value = "completed";
+    filteredInquiries = allInquiries.filter(q => q.status === "completed");
+  }
+
+  currentInquiryPage = 1;
+  renderPaginatedInquiries();
 }
