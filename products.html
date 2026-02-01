@@ -275,8 +275,67 @@
     <a href="#" class="back-to-top">
         <i class="fas fa-chevron-up"></i>
     </a>
+    <!-- ================= PRODUCT INQUIRY MODAL ================= -->
+<div id="inquiryModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:500px; width:90%;">
+        <h3 id="inquiryProductTitle" style="margin-bottom:15px;">Product Inquiry</h3>
 
-    <script src="js/products.js"></script>
-    <script src="js/script.js"></script>
+        <form id="inquiryForm">
+
+            <!-- hidden product info -->
+            <input type="hidden" id="inqProductId">
+            <input type="hidden" id="inqProductName">
+
+            <div class="form-group">
+                <input type="text" id="inqName" placeholder="Your Name" required>
+            </div>
+
+            <div class="form-group">
+                <input type="tel" id="inqPhone" placeholder="Mobile Number" required>
+            </div>
+
+            <div class="form-group">
+                <input type="number" id="inqQty" placeholder="Quantity (kg)" required>
+            </div>
+
+            <div class="form-group">
+                <textarea id="inqMessage" placeholder="Message / Requirements" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                Submit Inquiry
+            </button>
+
+            <button type="button" class="btn btn-secondary btn-block" onclick="closeInquiryModal()">
+                Cancel
+            </button>
+
+        </form>
+    </div>
+</div>
+<!-- ========================================================= -->
+
+
+    <!-- Firebase SDK (ALWAYS FIRST) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
+    authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
+    projectId: "kailash-house-exim-cfcb1",
+    storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
+    messagingSenderId: "912462708660",
+    appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<!-- Your JS files (AFTER firebase) -->
+<script src="js/products.js"></script>
+<script src="js/script.js"></script>
+
 </body>
 </html>
