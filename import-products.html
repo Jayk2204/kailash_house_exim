@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Products to Firebase</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .import-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 2px solid var(--accent);
+        }
+        
+        .import-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .import-header img {
+            height: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .product-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 15px;
+        }
+        
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+        
+        .product-info {
+            flex: 1;
+        }
+        
+        .product-name {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        
+        .product-category {
+            color: var(--accent);
+            font-size: 0.85rem;
+        }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status.pending {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+        
+        .status.imported {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+        
+        .import-actions {
+            text-align: center;
+        }
+        
+        #progressBar {
+            width: 100%;
+            height: 20px;
+            background: var(--background);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+        
+        #progressFill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        #progressText {
+            text-align: center;
+            margin: 10px 0;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        .result {
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result.success {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+        
+        .result.error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="import-container">
+        <div class="import-header">
+            <img src="images/dark-logo.jpg" alt="Logo" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'">
+            <h1>Import Products to Firebase</h1>
+            <p>Import your existing products to Firebase database</p>
+        </div>
+        
+        <div class="product-list" id="productList">
+            <!-- Products will be listed here -->
+        </div>
+        
+        <div id="progressBar">
+            <div id="progressFill"></div>
+        </div>
+        <div id="progressText"></div>
+        
+        <div class="import-actions">
+            <button id="importBtn" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Import to Firebase
+            </button>
+            <button id="checkBtn" class="btn btn-secondary">
+                <i class="fas fa-sync-alt"></i> Check Firebase
+            </button>
+        </div>
+        
+        <div id="result" class="result"></div>
+    </div>
+    
+    <!-- Firebase SDK v9+ (Modular Version) -->
+    <script type="module">
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            serverTimestamp,
+            getDocs,
+            limit,
+            query 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        // Your Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+       const firebaseConfig = {
+  apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
+  authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
+  projectId: "kailash-house-exim-cfcb1",
+  storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
+  messagingSenderId: "912462708660",
+  appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1",
+  measurementId: "G-XQN54W4R8E"
+};
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Your existing products data
+        const existingProducts = [
+            {
+                id: "1",
+                name: "Makhana Nuts",
+                image: "images/makhana.png",
+                description: "Premium quality fox nuts, rich in protein and antioxidants. Carefully processed to retain natural nutrition.",
+                category: "nuts",
+                status: "active",
+                specs: ["Export Grade A", "Clean & Uniform", "Rich in Protein", "Antioxidant Rich"]
+            },
+            {
+                id: "2",
+                name: "Ashwagandha Powder",
+                image: "images/Ashwagandha.png",
+                description: "Pure, potent ashwagandha powder with high withanolide content. Sourced from organic farms.",
+                category: "powders",
+                status: "active",
+                specs: ["High Withanolide", "Organic Certified", "Fine Grinding", "Pure Extract"]
+            },
+            {
+                id: "3",
+                name: "Moringa Powder",
+                image: "images/Moringa.png",
+                description: "Nutrient-rich moringa leaf powder, packed with vitamins and minerals. 100% natural and pure.",
+                category: "powders",
+                status: "active",
+                specs: ["Rich in Vitamins", "High Protein", "Antioxidant", "No Additives"]
+            },
+            {
+                id: "4",
+                name: "Onion Powder",
+                image: "images/onion.png",
+                description: "Dehydrated onion powder with strong flavor and aroma. Perfect for culinary and industrial use.",
+                category: "spices",
+                status: "active",
+                specs: ["Strong Aroma", "Consistent Flavor", "Hygienic Processing", "Long Shelf Life"]
+            },
+            {
+                id: "5",
+                name: "Cashew Nuts",
+                image: "images/Cashew.png",
+                description: "Premium quality cashew nuts, rich in healthy fats and minerals. Available in various grades.",
+                category: "nuts",
+                status: "active",
+                specs: ["Premium Grade", "Rich in Minerals", "Natural Oil", "Various Sizes"]
+            },
+            {
+                id: "6",
+                name: "Finger Turmeric",
+                image: "images/Finger-Turmeric.jpg",
+                description: "Whole finger turmeric with high curcumin content. Sourced from traditional turmeric-growing regions.",
+                category: "spices",
+                status: "active",
+                specs: ["High Curcumin", "Traditional Sourcing", "Whole Fingers", "Medicinal Grade"]
+            },
+            {
+                id: "7",
+                name: "Turmeric Powder",
+                image: "images/turemicpowder.png",
+                description: "Finely ground turmeric powder with vibrant color and aroma. Rich in curcuminoids.",
+                category: "spices",
+                status: "active",
+                specs: ["Vibrant Color", "Rich Aroma", "High Curcuminoids", "Fine Grinding"]
+            },
+            {
+                id: "8",
+                name: "Chilli Powder",
+                image: "images/Chilli-Powder.png",
+                description: "Spicy red chilli powder with consistent heat level. Available in different spice levels.",
+                category: "spices",
+                status: "active",
+                specs: ["Consistent Heat", "Vibrant Red", "Different Grades", "Pure Grinding"]
+            },
+            {
+                id: "9",
+                name: "Coriander Powder",
+                image: "images/Coriander-Powder.png",
+                description: "Aromatic coriander powder perfect for culinary uses. Made from high-quality coriander seeds.",
+                category: "spices",
+                status: "active",
+                specs: ["Strong Aroma", "Fine Texture", "Pure Grinding", "Fresh Seeds"]
+            },
+            {
+                id: "10",
+                name: "Ground Cumin Powder",
+                image: "images/Ground-Cumin-Powder.png",
+                description: "Freshly ground cumin powder with distinctive earthy flavor. Perfect for Indian and Middle Eastern cuisine.",
+                category: "spices",
+                status: "active",
+                specs: ["Earthy Flavor", "Fresh Grinding", "Pure Quality", "No Additives"]
+            },
+            {
+                id: "11",
+                name: "Garlic Powder",
+                image: "images/Garlic-Powder.png",
+                description: "Dehydrated garlic powder with strong flavor and long shelf life. Hygienically processed.",
+                category: "spices",
+                status: "active",
+                specs: ["Strong Flavor", "Long Shelf Life", "Hygienic", "No Preservatives"]
+            },
+            {
+                id: "12",
+                name: "Ginger Powder",
+                image: "images/Ginger-Powder.png",
+                description: "Pure ginger powder with pungent aroma and health benefits. Rich in gingerol and antioxidants.",
+                category: "spices",
+                status: "active",
+                specs: ["Pungent Aroma", "Rich in Gingerol", "Pure Grinding", "Health Benefits"]
+            }
+        ];
+        
+        // Display products
+        function displayProducts() {
+            const productList = document.getElementById('productList');
+            let html = '';
+            
+            existingProducts.forEach(product => {
+                html += `
+                    <div class="product-item" id="product-${product.id}">
+                        <img src="${product.image}" alt="${product.name}" 
+                             onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'">
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-category">${product.category}</div>
+                        </div>
+                        <div class="status pending" id="status-${product.id}">Pending</div>
+                    </div>
+                `;
+            });
+            
+            productList.innerHTML = html;
+        }
+        
+        // Import products to Firebase
+        async function importProducts() {
+            const importBtn = document.getElementById('importBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const resultDiv = document.getElementById('result');
+            
+            importBtn.disabled = true;
+            progressBar.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            let importedCount = 0;
+            let errorCount = 0;
+            
+            for (let i = 0; i < existingProducts.length; i++) {
+                const product = existingProducts[i];
+                
+                // Update progress
+                const progress = ((i + 1) / existingProducts.length) * 100;
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `Importing ${i + 1} of ${existingProducts.length}: ${product.name}`;
+                
+                try {
+                    // Add to Firestore using modular SDK
+                    const productRef = doc(db, 'products', product.id);
+                    await setDoc(productRef, {
+                        ...product,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                    
+                    // Update UI
+                    document.getElementById(`status-${product.id}`).className = 'status imported';
+                    document.getElementById(`status-${product.id}`).textContent = 'Imported ✓';
+                    importedCount++;
+                    
+                } catch (error) {
+                    console.error(`Error importing ${product.name}:`, error);
+                    document.getElementById(`status-${product.id}`).className = 'status error';
+                    document.getElementById(`status-${product.id}`).textContent = 'Error';
+                    errorCount++;
+                }
+                
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            
+            // Show result
+            progressText.textContent = `Import complete! ${importedCount} imported, ${errorCount} errors`;
+            
+            if (errorCount === 0) {
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Success!</strong> All ${importedCount} products imported successfully to Firebase.
+                    <br><br>
+                    <a href="admin-panel.html" class="btn btn-small btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Go to Admin Panel
+                    </a>
+                `;
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Partial Success:</strong> ${importedCount} imported, ${errorCount} failed.
+                    <br>Check console for error details.
+                `;
+            }
+            
+            resultDiv.style.display = 'block';
+            importBtn.disabled = false;
+        }
+        
+        // Check Firebase connection
+        async function checkFirebase() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                // Test Firestore connection
+                const productsRef = collection(db, 'products');
+                const q = query(productsRef, limit(1));
+                const snapshot = await getDocs(q);
+                
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Firebase Connected!</strong>
+                    <br>Database is ready for import.
+                    <br>Current products in database: ${snapshot.size}
+                `;
+                resultDiv.style.display = 'block';
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Firebase Connection Failed!</strong>
+                    <br>Error: ${error.message}
+                    <br><br>
+                    <strong>Check:</strong>
+                    <ol>
+                        <li>Firebase configuration is correct</li>
+                        <li>Firestore is enabled in Firebase console</li>
+                        <li>Security rules allow writes</li>
+                    </ol>
+                `;
+                resultDiv.style.display = 'block';
+                console.error("Firebase connection error:", error);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            displayProducts();
+            
+            document.getElementById('importBtn').addEventListener('click', importProducts);
+            document.getElementById('checkBtn').addEventListener('click', checkFirebase);
+            
+            // Auto-check Firebase on load
+            checkFirebase();
+        });
+    </script>
+</body>
+</html>

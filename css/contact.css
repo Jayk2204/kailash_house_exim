@@ -1,0 +1,221 @@
+/* Contact Page Styles */
+.contact-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 40px;
+    background: var(--card-bg, #ffffff);
+    border-radius: 15px;
+    border: 2px solid var(--accent, #2c3e50);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.contact-header img {
+    height: 70px;
+    margin-bottom: 20px;
+}
+
+.contact-header h1 {
+    color: var(--text-light, #333);
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+}
+
+.contact-header p {
+    color: var(--text-gray, #666);
+    font-size: 1.1rem;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.contact-info {
+    padding: 25px;
+    background: rgba(44, 62, 80, 0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(44, 62, 80, 0.1);
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.info-icon {
+    width: 45px;
+    height: 45px;
+    background: var(--accent, #2c3e50);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+.info-item h3 {
+    color: var(--text-light, #333);
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.info-item p {
+    color: var(--text-gray, #666);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.contact-form {
+    padding: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-light, #333);
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 8px;
+    background: var(--background, #fff);
+    color: var(--text-light, #333);
+    font-family: inherit;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent, #2c3e50);
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.btn-block {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+}
+
+.success-message {
+    padding: 15px 20px;
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    border-radius: 8px;
+    color: #27ae60;
+    margin-bottom: 25px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.success-message i {
+    font-size: 1.2rem;
+}
+
+.error-message {
+    padding: 15px 20px;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    border-radius: 8px;
+    color: #c0392b;
+    margin-bottom: 25px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-message i {
+    font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .contact-container {
+        margin: 30px auto;
+        padding: 25px;
+    }
+    
+    .contact-grid {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .contact-header img {
+        height: 60px;
+    }
+    
+    .contact-header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}

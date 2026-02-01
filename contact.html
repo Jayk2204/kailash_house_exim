@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Kailash House EXIM</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/contact.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar (Add your existing navbar here) -->
+    
+    <div class="contact-container">
+        <div class="contact-header">
+            <img src="images/dark-logo.jpg" alt="Logo" 
+                 onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'">
+            <h1>Contact Kailash House EXIM</h1>
+            <p>Get in touch with us for product inquiries, quotes, or any questions</p>
+        </div>
+        
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i>
+            <strong>Thank you!</strong> Your inquiry has been submitted successfully. We'll contact you soon.
+        </div>
+        
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">An error occurred. Please try again.</span>
+        </div>
+        
+        <div class="contact-grid">
+            <!-- Contact Information -->
+            <div class="contact-info">
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <h3>Our Location</h3>
+                        <p>Kailash House EXIM<br>
+                        Export-Import Business Office<br>
+                        India</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                        <h3>Phone Number</h3>
+                        <p>+91 XXXXX XXXXX</p>
+                        <p>Business Hours: 9:00 AM - 6:00 PM IST</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <h3>Email Address</h3>
+                        <p>info@kailashhouseexim.com</p>
+                        <p>sales@kailashhouseexim.com</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h3>Business Hours</h3>
+                        <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                        <p>Saturday: 10:00 AM - 4:00 PM</p>
+                        <p>Sunday: Closed</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="contact-form">
+                <form id="inquiryForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" required placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" required placeholder="Enter your email">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="Enter your phone number">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="company">Company Name</label>
+                            <input type="text" id="company" placeholder="Enter your company name">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product">Product Interest</label>
+                        <select id="product">
+                            <option value="">Select a product (optional)</option>
+                            <option value="Makhana Nuts">Makhana Nuts</option>
+                            <option value="Ashwagandha Powder">Ashwagandha Powder</option>
+                            <option value="Moringa Powder">Moringa Powder</option>
+                            <option value="Onion Powder">Onion Powder</option>
+                            <option value="Cashew Nuts">Cashew Nuts</option>
+                            <option value="Finger Turmeric">Finger Turmeric</option>
+                            <option value="Turmeric Powder">Turmeric Powder</option>
+                            <option value="Chilli Powder">Chilli Powder</option>
+                            <option value="Coriander Powder">Coriander Powder</option>
+                            <option value="Ground Cumin Powder">Ground Cumin Powder</option>
+                            <option value="Garlic Powder">Garlic Powder</option>
+                            <option value="Ginger Powder">Ginger Powder</option>
+                            <option value="other">Other Product</option>
+                            <option value="general">General Inquiry</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <input type="text" id="subject" required placeholder="Enter subject of your inquiry">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" rows="5" required placeholder="Enter your detailed message..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-paper-plane"></i> Send Inquiry
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    
+    <!-- Your Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>

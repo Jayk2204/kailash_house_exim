@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Products | Kailash House EXIM Group</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/watermark.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="images/dark-logo.jpg">
+</head>
+<body>
+    <!-- Watermark Background -->
+    <div class="watermark"></div>
+
+    <!-- Header -->
+<header class="header">
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo-section">
+                <a href="index.html" class="logo-link">
+                    <img src="images/dark-logo.jpg" alt="Kailash House EXIM Group" class="logo-img">
+                    <div class="company-info">
+                        <h1 class="company-name">Kailash House EXIM</h1>
+                        <p class="company-tagline">Premium Indian Agro Products Exporter</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="nav-menu">
+                <ul>
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#certifications">Certifications</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-actions">
+                <a href="https://wa.me/8780565907" class="whatsapp-cta">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>Export Inquiry</span>
+                </a>
+            </div>
+            
+            <div class="mobile-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </div>
+</header>
+
+    <!-- Products Hero -->
+    <section class="page-hero">
+        <div class="container">
+            <div class="page-hero-content">
+                <h1>Our Premium Product Range</h1>
+                <p>Export-grade agricultural and herbal products meeting international quality standards</p>
+                <div class="hero-badge">
+                    <span>Available for Export Worldwide</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Filter -->
+    <section class="products-filter">
+        <div class="container">
+            <div class="filter-container">
+                <div class="filter-categories">
+                    <button class="filter-btn active" data-filter="all">All Products</button>
+                    <button class="filter-btn" data-filter="nuts">Nuts</button>
+                    <button class="filter-btn" data-filter="powders">Herbal Powders</button>
+                    <button class="filter-btn" data-filter="spices">Spices</button>
+                </div>
+                
+                <div class="filter-search">
+                    <input type="text" placeholder="Search products..." id="productSearch">
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Products Grid -->
+    <section class="all-products">
+        <div class="container">
+            <div class="products-header">
+                <h2>Complete Product Catalog</h2>
+                <p>Explore our wide range of premium Indian agro products available for export</p>
+            </div>
+            
+            <div class="products-grid" id="all-products-grid">
+                <!-- Products will load here -->
+            </div>
+            
+            <div class="load-more-container">
+                <button id="loadMoreBtn" class="btn btn-outline">
+                    <span>Load More Products</span>
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Categories -->
+    <section class="product-categories">
+        <div class="container">
+            <div class="section-header">
+                <h2>Product Categories</h2>
+                <p>Browse our products by category</p>
+            </div>
+            
+            <div class="categories-grid">
+                <div class="category-card" data-category="nuts">
+                    <div class="category-icon">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <h3>Nuts & Seeds</h3>
+                    <p>Premium quality nuts including Makhana and Cashews</p>
+                </div>
+                
+                <div class="category-card" data-category="powders">
+                    <div class="category-icon">
+                        <i class="fas fa-mortar-pestle"></i>
+                    </div>
+                    <h3>Herbal Powders</h3>
+                    <p>Ayurvedic and medicinal herbal powders</p>
+                </div>
+                
+                <div class="category-card" data-category="spices">
+                    <div class="category-icon">
+                        <i class="fas fa-pepper-hot"></i>
+                    </div>
+                    <h3>Spices & Powders</h3>
+                    <p>Authentic Indian spices and culinary powders</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Export Process -->
+    <section class="export-process">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Export Process</h2>
+                <p>Seamless international trade execution</p>
+            </div>
+            
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">01</div>
+                    <h3>Inquiry & Quote</h3>
+                    <p>Submit your product requirements for detailed quotation</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">02</div>
+                    <h3>Samples & Approval</h3>
+                    <p>Receive product samples for quality verification</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">03</div>
+                    <h3>Order Confirmation</h3>
+                    <p>Finalize order details and payment terms</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">04</div>
+                    <h3>Processing & QC</h3>
+                    <p>Production with strict quality control checks</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">05</div>
+                    <h3>Export Documentation</h3>
+                    <p>Complete shipping and customs documentation</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">06</div>
+                    <h3>Shipment & Delivery</h3>
+                    <p>Secure packaging and timely global delivery</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="products-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Source Premium Indian Products?</h2>
+                <p>Contact our export team for competitive pricing, samples, and customized packaging options</p>
+                <div class="cta-buttons">
+                    <a href="index.html#contact" class="btn btn-primary">
+                        <span>Request Quote</span>
+                        <i class="fas fa-file-export"></i>
+                    </a>
+                    <a href="https://wa.me/8780565907" class="btn btn-secondary">
+                        <span>Chat on WhatsApp</span>
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="images/dark-logo.jpg" alt="Kailash House EXIM" class="footer-logo">
+                    <p class="footer-desc">Exporting premium Indian agro products worldwide with unmatched quality and reliability.</p>
+                    <div class="footer-cta">
+                        <a href="https://wa.me/8780565907" class="whatsapp-footer">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>Chat on WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="index.html#about">About Company</a></li>
+                        <li><a href="index.html#certifications">Certifications</a></li>
+                        <li><a href="index.html#contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-products">
+                    <h4>Our Products</h4>
+                    <ul>
+                        <li><a href="#nuts">Makhana Nuts</a></li>
+                        <li><a href="#powders">Ashwagandha Powder</a></li>
+                        <li><a href="#powders">Moringa Powder</a></li>
+                        <li><a href="#nuts">Cashew Nuts</a></li>
+                        <li><a href="#spices">Spices & Powders</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4>Export Office</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Adipur – Kutch, Gujarat – 370205, India</p>
+                    <p><i class="fas fa-phone"></i> +91 8780565907</p>
+                    <p><i class="fas fa-envelope"></i> export@kailashhouseexim.com</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="copyright">
+                    <p>&copy; 2023 Kailash House EXIM Group. All rights reserved.</p>
+                </div>
+                <div class="footer-policies">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Export Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <script src="js/products.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

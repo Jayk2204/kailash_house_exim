@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Kailash House EXIM</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Quick fix for any missing admin styles */
+        .empty-state, .empty-table {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-gray);
+        }
+        
+        .empty-state i, .empty-table i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .badge {
+            background: var(--accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Protection Screen -->
+    <div id="passwordScreen" class="password-screen">
+        <div class="password-container">
+            <div class="password-header">
+                <img src="images/dark-logo.jpg" alt="Kailash House EXIM" class="password-logo" 
+                     onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'">
+                <h2>Admin Access Required</h2>
+                <p>Enter admin password to continue</p>
+            </div>
+            
+            <div class="password-form">
+                <div class="form-group">
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" autocomplete="off">
+                    <button type="button" id="togglePasswordBtn" class="toggle-password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button id="loginBtn" class="btn btn-primary btn-block">
+                    <i class="fas fa-lock"></i> Access Admin Panel
+                </button>
+                <div id="passwordError" class="error-message"></div>
+                
+                <div class="password-hint">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Default password: kailash123</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Panel (Hidden until password verified) -->
+    <div id="adminPanel" class="admin-panel" style="display: none;">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-nav">
+                    <div class="admin-brand">
+                        <img src="images/dark-logo.jpg" alt="Logo" 
+                             onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'">
+                        <div>
+                            <h2>Kailash House EXIM</h2>
+                            <p>Admin Control Panel</p>
+                        </div>
+                    </div>
+                    <div class="admin-actions">
+                        <button id="logoutBtn" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Content -->
+        <div class="admin-container">
+            <!-- Sidebar -->
+            <aside class="admin-sidebar">
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li>
+                            <a href="#dashboard" class="active" data-tab="dashboard">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#products" data-tab="products">
+                                <i class="fas fa-box"></i>
+                                <span>Products</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#add-product" data-tab="add-product">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Add Product</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#inquiries" data-tab="inquiries">
+                                <i class="fas fa-envelope"></i>
+                                <span>Customer Inquiries</span>
+                                <span class="badge" id="inquiryCount">0</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#settings" data-tab="settings">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="admin-main">
+                <div class="container">
+                    <!-- Dashboard Tab -->
+                    <div id="dashboard-tab" class="tab-content active">
+                        <div class="dashboard-header">
+                            <h1>Dashboard Overview</h1>
+                            <p>Welcome to Kailash House EXIM Admin Panel</p>
+                        </div>
+                        
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="totalProductsCount">0</h3>
+                                    <p>Total Products</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="totalInquiriesCount">0</h3>
+                                    <p>Total Inquiries</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="pendingInquiriesCount">0</h3>
+                                    <p>Pending Inquiries</p>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="completedInquiriesCount">0</h3>
+                                    <p>Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-section">
+                            <div class="section-header">
+                                <h3>Recent Inquiries</h3>
+                                <a href="#inquiries" class="view-all">View All</a>
+                            </div>
+                            <div class="recent-list" id="recentInquiriesList">
+                                <!-- Recent inquiries will load here -->
+                                <div class="empty-state">
+                                    <i class="fas fa-envelope-open"></i>
+                                    <p>No inquiries yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Tab -->
+                    <div id="products-tab" class="tab-content">
+                        <div class="products-header">
+                            <h1>Manage Products</h1>
+                            <button class="btn btn-primary" onclick="switchTab('add-product')">
+                                <i class="fas fa-plus"></i> Add New Product
+                            </button>
+                        </div>
+                        
+                        <div class="products-table-container">
+                            <table class="products-table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody">
+                                    <!-- Products will load here -->
+                                    <tr>
+                                        <td colspan="6" class="empty-table">
+                                            <i class="fas fa-box-open"></i>
+                                            <p>No products added yet</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Add Product Tab -->
+                    <div id="add-product-tab" class="tab-content">
+                        <div class="add-product-header">
+                            <h1>Add New Product</h1>
+                            <button class="btn btn-secondary" onclick="switchTab('products')">
+                                <i class="fas fa-arrow-left"></i> Back to Products
+                            </button>
+                        </div>
+                        
+                        <form class="product-form" id="addProductForm">
+                            <div class="form-section">
+                                <h3><i class="fas fa-info-circle"></i> Product Information</h3>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="productName">Product Name *</label>
+                                        <input type="text" id="productName" required 
+                                               placeholder="e.g., Makhana Nuts">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="productCategory">Category *</label>
+                                        <select id="productCategory" required>
+                                            <option value="">Select Category</option>
+                                            <option value="nuts">Nuts</option>
+                                            <option value="powders">Herbal Powders</option>
+                                            <option value="spices">Spices</option>
+                                            <option value="seeds">Seeds</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="productDescription">Description *</label>
+                                    <textarea id="productDescription" rows="3" required
+                                              placeholder="Describe the product in detail..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="productImage">Product Image *</label>
+                                    <div class="image-upload">
+                                        <input type="file" id="productImage" accept="image/*" required>
+                                        <label for="productImage" class="upload-btn">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                            <span>Choose Image</span>
+                                        </label>
+                                        <div class="image-preview" id="imagePreview">
+                                            <i class="fas fa-image"></i>
+                                            <span>No image selected</span>
+                                        </div>
+                                    </div>
+                                    <p class="form-note">Max size: 2MB | Formats: JPG, PNG, WebP</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="productSpecs">Specifications (comma separated)</label>
+                                    <textarea id="productSpecs" rows="2" 
+                                              placeholder="e.g., Export Grade A, Rich in Protein, Antioxidant Rich"></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="productStatus">Status</label>
+                                    <select id="productStatus">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save Product
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="switchTab('products')">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Inquiries Tab -->
+                    <div id="inquiries-tab" class="tab-content">
+                        <div class="inquiries-header">
+                            <h1>Customer Inquiries</h1>
+                            <div class="filter-controls">
+                                <select id="statusFilter">
+                                    <option value="all">All Status</option>
+                                    <option value="new">New</option>
+                                    <option value="contacted">Contacted</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                                <button class="btn btn-secondary" onclick="refreshInquiries()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="inquiries-list" id="inquiriesList">
+                            <!-- Inquiries will load here -->
+                            <div class="empty-state">
+                                <i class="fas fa-envelope"></i>
+                                <p>No inquiries received yet</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div id="settings-tab" class="tab-content">
+                        <div class="settings-header">
+                            <h1>Settings</h1>
+                        </div>
+                        
+                        <div class="settings-cards">
+                            <div class="settings-card">
+                                <div class="settings-icon">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="settings-content">
+                                    <h3>Change Password</h3>
+                                    <p>Update your admin password</p>
+                                    <button class="btn btn-primary" onclick="showChangePassword()">
+                                        Change Password
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-card">
+                                <div class="settings-icon">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div class="settings-content">
+                                    <h3>Data Management</h3>
+                                    <p>Export or backup your data</p>
+                                    <button class="btn btn-secondary" onclick="exportData()">
+                                        <i class="fas fa-download"></i> Export Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Change Password Modal (Hidden by default) -->
+                        <div id="changePasswordModal" class="modal" style="display: none;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3>Change Password</h3>
+                                    <button class="modal-close" onclick="hideChangePassword()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="passwordChangeForm">
+                                        <div class="form-group">
+                                            <label for="currentPassword">Current Password</label>
+                                            <input type="password" id="currentPassword" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="newPassword">New Password</label>
+                                            <input type="password" id="newPassword" required minlength="6">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="confirmPassword">Confirm New Password</label>
+                                            <input type="password" id="confirmPassword" required>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn btn-primary">Update Password</button>
+                                            <button type="button" class="btn btn-secondary" onclick="hideChangePassword()">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Firebase SDK v9+ COMPATIBILITY VERSION (no modules needed) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+    
+    <script>
+        // Your Firebase configuration (USE THE SAME AS IMPORT SCRIPT!)
+     const firebaseConfig = {
+  apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
+  authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
+  projectId: "kailash-house-exim-cfcb1",
+  storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
+  messagingSenderId: "912462708660",
+  appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1",
+  measurementId: "G-XQN54W4R8E"
+};
+        
+        // Initialize Firebase with compatibility library
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        
+        // Simple password protection (temporary)
+        const ADMIN_PASSWORD = 'kailash123';
+    </script>
+    
+    <script>
+        // ==================== ADMIN MAIN SCRIPT ====================
+        
+        let currentUser = null;
+        let productsListener = null;
+        let inquiriesListener = null;
+        
+        // Password Protection
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('adminPassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // Toggle password visibility
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            });
+            
+            // Login
+            loginBtn.addEventListener('click', function() {
+                const password = passwordInput.value.trim();
+                const errorDiv = document.getElementById('passwordError');
+                
+                if (password === ADMIN_PASSWORD) {
+                    // Show admin panel
+                    document.getElementById('passwordScreen').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'block';
+                    
+                    // Initialize Firebase data
+                    initializeAdmin();
+                } else {
+                    errorDiv.textContent = 'Incorrect password. Please try again.';
+                    passwordInput.focus();
+                }
+            });
+            
+            // Allow Enter key to login
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginBtn.click();
+                }
+            });
+            
+            // Logout
+            logoutBtn.addEventListener('click', function() {
+                // Clear listeners
+                if (productsListener) productsListener();
+                if (inquiriesListener) inquiriesListener();
+                
+                // Hide admin panel
+                document.getElementById('adminPanel').style.display = 'none';
+                document.getElementById('passwordScreen').style.display = 'block';
+                
+                // Clear password
+                document.getElementById('adminPassword').value = '';
+            });
+            
+            // Tab switching
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tab = this.getAttribute('data-tab');
+                    switchTab(tab);
+                });
+            });
+            
+            // Image preview
+            const imageInput = document.getElementById('productImage');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            if (imageInput) {
+                imageInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        if (file.size > 2 * 1024 * 1024) { // 2MB
+                            alert('File size must be less than 2MB');
+                            this.value = '';
+                            return;
+                        }
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                            imagePreview.classList.add('has-image');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Add product form
+            const addProductForm = document.getElementById('addProductForm');
+            if (addProductForm) {
+                addProductForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('productName').value.trim();
+                    const category = document.getElementById('productCategory').value;
+                    const description = document.getElementById('productDescription').value.trim();
+                    const specsText = document.getElementById('productSpecs').value.trim();
+                    const status = document.getElementById('productStatus').value;
+                    const imageFile = document.getElementById('productImage').files[0];
+                    
+                    if (!name || !category || !description || !imageFile) {
+                        alert('Please fill all required fields');
+                        return;
+                    }
+                    
+                    const specs = specsText ? specsText.split(',').map(s => s.trim()).filter(s => s) : [];
+                    
+                    try {
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                        
+                        // Generate ID
+                        const productId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                        
+                        // Upload image to Firebase Storage
+                        const storageRef = storage.ref();
+                        const imageRef = storageRef.child(`products/${productId}/${imageFile.name}`);
+                        await imageRef.put(imageFile);
+                        const imageUrl = await imageRef.getDownloadURL();
+                        
+                        // Save product to Firestore
+                        await db.collection('products').doc(productId).set({
+                            id: productId,
+                            name: name,
+                            category: category,
+                            description: description,
+                            specs: specs,
+                            status: status,
+                            image: imageUrl,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        alert('Product added successfully!');
+                        this.reset();
+                        imagePreview.innerHTML = '<i class="fas fa-image"></i><span>No image selected</span>';
+                        imagePreview.classList.remove('has-image');
+                        
+                        // Switch to products tab
+                        switchTab('products');
+                        
+                    } catch (error) {
+                        console.error('Error adding product:', error);
+                        alert('Error adding product: ' + error.message);
+                    } finally {
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Product';
+                    }
+                });
+            }
+        });
+        
+        // Initialize admin dashboard
+        async function initializeAdmin() {
+            try {
+                // Load products
+                loadProducts();
+                
+                // Load inquiries
+                loadInquiries();
+                
+                // Load dashboard stats
+                updateDashboardStats();
+                
+            } catch (error) {
+                console.error('Error initializing admin:', error);
+            }
+        }
+        
+        // Load products from Firestore
+        function loadProducts() {
+            const productsTableBody = document.getElementById('productsTableBody');
+            
+            // Clear any existing listener
+            if (productsListener) {
+                productsListener();
+            }
+            
+            // Set up real-time listener
+            productsListener = db.collection('products')
+                .orderBy('createdAt', 'desc')
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        productsTableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="empty-table">
+                                    <i class="fas fa-box-open"></i>
+                                    <p>No products added yet</p>
+                                </td>
+                            </tr>
+                        `;
+                        document.getElementById('totalProductsCount').textContent = '0';
+                        return;
+                    }
+                    
+                    let html = '';
+                    let productCount = 0;
+                    
+                    snapshot.forEach(doc => {
+                        const product = doc.data();
+                        productCount++;
+                        
+                        // Format date
+                        const date = product.createdAt ? 
+                            new Date(product.createdAt.seconds * 1000).toLocaleDateString() : 
+                            'N/A';
+                        
+                        html += `
+                            <tr>
+                                <td>
+                                    <img src="${product.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'}" 
+                                         alt="${product.name}" 
+                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                </td>
+                                <td>${product.name}</td>
+                                <td><span class="badge">${product.category}</span></td>
+                                <td>${product.description.substring(0, 80)}${product.description.length > 80 ? '...' : ''}</td>
+                                <td>
+                                    <span class="status ${product.status}">
+                                        ${product.status === 'active' ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-small btn-secondary" onclick="editProduct('${product.id}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-small btn-danger" onclick="deleteProduct('${product.id}', '${product.name}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    productsTableBody.innerHTML = html;
+                    document.getElementById('totalProductsCount').textContent = productCount;
+                    
+                }, error => {
+                    console.error('Error loading products:', error);
+                    productsTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="empty-table error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Error loading products: ${error.message}</p>
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+        
+        // Load inquiries from Firestore
+        function loadInquiries() {
+            const inquiriesList = document.getElementById('inquiriesList');
+            const recentInquiriesList = document.getElementById('recentInquiriesList');
+            
+            // Clear any existing listener
+            if (inquiriesListener) {
+                inquiriesListener();
+            }
+            
+            // Set up real-time listener
+            inquiriesListener = db.collection('inquiries')
+                .orderBy('timestamp', 'desc')
+                .onSnapshot(snapshot => {
+                    if (snapshot.empty) {
+                        inquiriesList.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-envelope"></i>
+                                <p>No inquiries received yet</p>
+                            </div>
+                        `;
+                        
+                        recentInquiriesList.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-envelope-open"></i>
+                                <p>No inquiries yet</p>
+                            </div>
+                        `;
+                        
+                        document.getElementById('totalInquiriesCount').textContent = '0';
+                        document.getElementById('pendingInquiriesCount').textContent = '0';
+                        document.getElementById('completedInquiriesCount').textContent = '0';
+                        document.getElementById('inquiryCount').textContent = '0';
+                        return;
+                    }
+                    
+                    let allInquiries = [];
+                    let recentHtml = '';
+                    let filteredHtml = '';
+                    let totalCount = 0;
+                    let pendingCount = 0;
+                    let completedCount = 0;
+                    
+                    snapshot.forEach(doc => {
+                        const inquiry = doc.data();
+                        inquiry.id = doc.id;
+                        allInquiries.push(inquiry);
+                        
+                        totalCount++;
+                        if (inquiry.status === 'new' || inquiry.status === 'contacted') pendingCount++;
+                        if (inquiry.status === 'completed') completedCount++;
+                        
+                        // Format date
+                        const date = inquiry.timestamp ? 
+                            new Date(inquiry.timestamp.seconds * 1000).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) : 
+                            'N/A';
+                        
+                        // Recent inquiries (first 5)
+                        if (allInquiries.length <= 5) {
+                            recentHtml += `
+                                <div class="recent-item">
+                                    <div class="recent-info">
+                                        <h4>${inquiry.name}</h4>
+                                        <p>${inquiry.product || 'General Inquiry'}</p>
+                                        <span class="recent-date">${date}</span>
+                                    </div>
+                                    <div class="recent-status">
+                                        <span class="status ${inquiry.status}">${inquiry.status}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Full inquiries list item
+                        filteredHtml += `
+                            <div class="inquiry-item" data-status="${inquiry.status}">
+                                <div class="inquiry-header">
+                                    <div class="inquiry-meta">
+                                        <h4>${inquiry.name}</h4>
+                                        <span class="inquiry-date">${date}</span>
+                                    </div>
+                                    <div class="inquiry-actions">
+                                        <select class="status-select" data-id="${inquiry.id}" onchange="updateInquiryStatus('${inquiry.id}', this.value)">
+                                            <option value="new" ${inquiry.status === 'new' ? 'selected' : ''}>New</option>
+                                            <option value="contacted" ${inquiry.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+                                            <option value="processing" ${inquiry.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                            <option value="completed" ${inquiry.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                            <option value="cancelled" ${inquiry.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                        </select>
+                                        <button class="btn btn-small btn-danger" onclick="deleteInquiry('${inquiry.id}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="inquiry-body">
+                                    <p><strong>Email:</strong> ${inquiry.email}</p>
+                                    ${inquiry.phone ? `<p><strong>Phone:</strong> ${inquiry.phone}</p>` : ''}
+                                    ${inquiry.product ? `<p><strong>Product:</strong> ${inquiry.product}</p>` : ''}
+                                    ${inquiry.message ? `<p><strong>Message:</strong> ${inquiry.message}</p>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    // Update UI
+                    recentInquiriesList.innerHTML = recentHtml || `
+                        <div class="empty-state">
+                            <i class="fas fa-envelope-open"></i>
+                            <p>No inquiries yet</p>
+                        </div>
+                    `;
+                    
+                    inquiriesList.innerHTML = filteredHtml;
+                    filterInquiries();
+                    
+                    // Update counts
+                    document.getElementById('totalInquiriesCount').textContent = totalCount;
+                    document.getElementById('pendingInquiriesCount').textContent = pendingCount;
+                    document.getElementById('completedInquiriesCount').textContent = completedCount;
+                    document.getElementById('inquiryCount').textContent = totalCount;
+                    
+                }, error => {
+                    console.error('Error loading inquiries:', error);
+                });
+        }
+        
+        // Filter inquiries by status
+        function filterInquiries() {
+            const filterValue = document.getElementById('statusFilter').value;
+            const items = document.querySelectorAll('.inquiry-item');
+            
+            items.forEach(item => {
+                if (filterValue === 'all' || item.getAttribute('data-status') === filterValue) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        // Update dashboard stats
+        async function updateDashboardStats() {
+            // Products count is updated in loadProducts()
+            // Inquiries count is updated in loadInquiries()
+            
+            // Additional stats can be added here
+        }
+        
+        // Switch tabs
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const tabElement = document.getElementById(tabName + '-tab');
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+            
+            // Add active class to clicked nav item
+            const navLink = document.querySelector(`[data-tab="${tabName}"]`);
+            if (navLink) {
+                navLink.classList.add('active');
+            }
+            
+            // Update URL hash
+            window.location.hash = tabName;
+            
+            // If switching to products tab, refresh the list
+            if (tabName === 'products') {
+                loadProducts();
+            }
+        }
+        
+        // Update inquiry status
+        async function updateInquiryStatus(inquiryId, newStatus) {
+            try {
+                await db.collection('inquiries').doc(inquiryId).update({
+                    status: newStatus,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error updating inquiry status:', error);
+                alert('Error updating status: ' + error.message);
+            }
+        }
+        
+        // Delete product
+        async function deleteProduct(productId, productName) {
+            if (confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
+                try {
+                    await db.collection('products').doc(productId).delete();
+                    alert('Product deleted successfully!');
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    alert('Error deleting product: ' + error.message);
+                }
+            }
+        }
+        
+        // Delete inquiry
+        async function deleteInquiry(inquiryId) {
+            if (confirm('Are you sure you want to delete this inquiry?')) {
+                try {
+                    await db.collection('inquiries').doc(inquiryId).delete();
+                } catch (error) {
+                    console.error('Error deleting inquiry:', error);
+                    alert('Error deleting inquiry: ' + error.message);
+                }
+            }
+        }
+        
+        // Edit product (placeholder)
+        function editProduct(productId) {
+            alert('Edit feature coming soon! Product ID: ' + productId);
+            // You can implement edit functionality here
+        }
+        
+        // Refresh inquiries
+        function refreshInquiries() {
+            loadInquiries();
+        }
+        
+        // Export data
+        async function exportData() {
+            try {
+                // Get all products
+                const productsSnapshot = await db.collection('products').get();
+                const products = productsSnapshot.docs.map(doc => doc.data());
+                
+                // Get all inquiries
+                const inquiriesSnapshot = await db.collection('inquiries').get();
+                const inquiries = inquiriesSnapshot.docs.map(doc => doc.data());
+                
+                // Create data object
+                const exportData = {
+                    exportedAt: new Date().toISOString(),
+                    products: products,
+                    inquiries: inquiries
+                };
+                
+                // Convert to JSON
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                // Create download link
+                const url = URL.createObjectURL(dataBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `kailash-exim-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('Data exported successfully!');
+                
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                alert('Error exporting data: ' + error.message);
+            }
+        }
+        
+        // Password change functions
+        function showChangePassword() {
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        }
+        
+        function hideChangePassword() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+            document.getElementById('passwordChangeForm').reset();
+        }
+        
+        // Check URL hash on load
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                switchTab(hash);
+            }
+        });
+        
+        // Initialize status filter
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', filterInquiries);
+        }
+    </script>
+</body>
+</html>

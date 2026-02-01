@@ -1,0 +1,110 @@
+[
+  {
+    "id": "1",
+    "name": "Makhana Nuts",
+    "image": "images/makhana.png",
+    "description": "Premium quality fox nuts, rich in protein and antioxidants. Carefully processed to retain natural nutrition.",
+    "category": "nuts",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "2",
+    "name": "Ashwagandha Powder",
+    "image": "images/Ashwagandha.png",
+    "description": "Pure, potent ashwagandha powder with high withanolide content. Sourced from organic farms.",
+    "category": "powders",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "3",
+    "name": "Moringa Powder",
+    "image": "images/Moringa.png",
+    "description": "Nutrient-rich moringa leaf powder, packed with vitamins and minerals. 100% natural and pure.",
+    "category": "powders",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "4",
+    "name": "Onion Powder",
+    "image": "images/onion.png",
+    "description": "Dehydrated onion powder with strong flavor and aroma. Perfect for culinary and industrial use.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "5",
+    "name": "Cashew",
+    "image": "images/Cashew.png",
+    "description": "Premium quality cashew nuts, rich in healthy fats and minerals. Available in various grades.",
+    "category": "nuts",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "6",
+    "name": "Finger Turmeric",
+    "image": "images/Finger-Turmeric.jpg",
+    "description": "Whole finger turmeric with high curcumin content. Sourced from traditional turmeric-growing regions.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "7",
+    "name": "Turmeric Powder",
+    "image": "images/turemicpowder.png",
+    "description": "Finely ground turmeric powder with vibrant color and aroma. Rich in curcuminoids.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "8",
+    "name": "Chilli Powder",
+    "image": "images/Chilli-Powder.png",
+    "description": "Spicy red chilli powder with consistent heat level. Available in different spice levels.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "9",
+    "name": "Coriander Powder",
+    "image": "images/Coriander-Powder.png",
+    "description": "Aromatic coriander powder perfect for culinary uses. Made from high-quality coriander seeds.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "10",
+    "name": "Ground Cumin Powder",
+    "image": "images/Ground-Cumin-Powder.png",
+    "description": "Freshly ground cumin powder with distinctive earthy flavor. Perfect for Indian and Middle Eastern cuisine.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "11",
+    "name": "Garlic Powder",
+    "image": "images/Garlic-Powder.png",
+    "description": "Dehydrated garlic powder with strong flavor and long shelf life. Hygienically processed.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  },
+  {
+    "id": "12",
+    "name": "Ginger Powder",
+    "image": "images/Ginger-Powder.png",
+    "description": "Pure ginger powder with pungent aroma and health benefits. Rich in gingerol and antioxidants.",
+    "category": "spices",
+    "status": "active",
+    "createdAt": "2023-01-15T10:30:00Z"
+  }
+]
