@@ -148,3 +148,91 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// ===============================
+// Navbar Active Link Fix (NO HTML SCRIPT)
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  const navLinks = document.querySelectorAll(".nav-menu a");
+
+  if (!navLinks.length) return;
+
+  let currentPage = window.location.pathname.split("/").pop();
+
+  // default page
+  if (currentPage === "") currentPage = "index.html";
+
+  navLinks.forEach(link => {
+    const linkPage = link.getAttribute("href");
+
+    // remove old active
+    link.classList.remove("active");
+
+    // exact match
+    if (linkPage === currentPage) {
+      link.classList.add("active");
+    }
+
+    // homepage special case
+    if (currentPage === "index.html" && linkPage === "index.html") {
+      link.classList.add("active");
+    }
+  });
+});
+// ===============================
+// FIX: Cross-page anchor navigation
+// products.html → index.html#section
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  const currentPage = location.pathname.split("/").pop();
+
+  document.querySelectorAll('.nav-menu a[href^="#"]').forEach(link => {
+    link.addEventListener("click", e => {
+      e.preventDefault();
+
+      const target = link.getAttribute("href"); // #about etc
+
+      if (currentPage !== "index.html" && currentPage !== "") {
+        // we are on products.html
+        window.location.href = "index.html" + target;
+      } else {
+        // already on index
+        const el = document.querySelector(target);
+        if (el) {
+          window.scrollTo({
+            top: el.offsetTop - 100,
+            behavior: "smooth"
+          });
+        }
+      }
+    });
+  });
+});
+// ===============================
+// Active nav fix
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+  const path = location.pathname.split("/").pop();
+
+  document.querySelectorAll(".nav-menu a").forEach(a => {
+    a.classList.remove("active");
+
+    if (
+      (path === "" || path === "index.html") && a.getAttribute("href") === "index.html"
+    ) {
+      a.classList.add("active");
+    }
+
+    if (path === "products.html" && a.getAttribute("href") === "products.html") {
+      a.classList.add("active");
+    }
+  });
+});
+// ===============================
+// Secret admin shortcut
+// ===============================
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
+    window.location.href = "admin-panel.html";
+  }
+});
