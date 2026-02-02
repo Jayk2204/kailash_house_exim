@@ -402,3 +402,9 @@ function openInquiryFilter(type) {
   currentInquiryPage = 1;
   renderPaginatedInquiries();
 }
+// ===============================
+// MAKE FUNCTIONS GLOBAL (INLINE HTML FIX)
+// ===============================
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
+window.switchTab = switchTab;
