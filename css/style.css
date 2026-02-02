@@ -2314,3 +2314,14 @@ body.modal-open{overflow:hidden}
     width: 100%;
     border-radius: 8px;
 }
+.clickable-map a {
+    display: block;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.clickable-map iframe {
+    pointer-events: none; /* 🔥 KEY LINE */
+    width: 100%;
+    border-radius: 8px;
+}
