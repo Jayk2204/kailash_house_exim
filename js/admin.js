@@ -158,23 +158,33 @@ async function handleSaveProduct(form) {
     image = await uploadImageToImageBB(file);
   }
 
-  const data = {
-    name,
-    category,
-    status,
-    image,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
+const data = {
+  id: editingProductId || null,        // ✅ keep id
+  name,
+  category,
+  description: form.productDescription?.value.trim() || "",
+  specs: form.productSpecs?.value
+    ? form.productSpecs.value.split(",").map(s => s.trim())
+    : [],
+  status,
+  image,
+  createdAt: editingProductId
+    ? firebase.firestore.FieldValue.serverTimestamp()
+    : firebase.firestore.FieldValue.serverTimestamp(),
+  updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+};
+
 
   const ref = firebase.firestore().collection("products");
 
-  if (editingProductId) {
-    await ref.doc(editingProductId).update(data);
-    editingProductId = null;
-  } else {
-    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    await ref.add(data);
-  }
+if (editingProductId) {
+  await ref.doc(editingProductId).update(data);
+  editingProductId = null;
+} else {
+  data.id = ref.doc().id; // ✅ auto store doc id
+  await ref.doc(data.id).set(data);
+}
+
 
   form.reset();
   imagePreview.innerHTML = "";
