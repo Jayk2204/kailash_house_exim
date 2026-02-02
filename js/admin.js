@@ -1,5 +1,5 @@
 // ===============================
-// Admin Panel JS (PRO CRM – FINAL ALL FIXED)
+// Admin Panel JS (PRO CRM – FINAL ALL FIXED + IMGBB SAFE PATCH)
 // ===============================
 
 let productsListener = null;
@@ -11,6 +11,9 @@ let currentInquiryPage = 1;
 const INQUIRIES_PER_PAGE = 3;
 let filteredInquiries = [];
 let allInquiries = [];
+
+// 🔐 ImageBB API KEY (PASTE YOURS)
+const IMGBB_API_KEY = "c2a57968ac9e3f5cf23caea37d08df2e";
 
 const DEFAULT_IMAGE =
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80";
@@ -111,17 +114,41 @@ function setupForms() {
 }
 
 // ===============================
-// ✅ FIX: MISSING FUNCTION
+// 🔥 ADDED: ImageBB Upload (NO LOGIC BREAK)
+// ===============================
+async function uploadImageToImageBB(file) {
+  const fd = new FormData();
+  fd.append("image", file);
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+    method: "POST",
+    body: fd
+  });
+
+  const json = await res.json();
+  if (!json.success) throw new Error("ImageBB upload failed");
+
+  return json.data.url;
+}
+
+// ===============================
+// PRODUCT SAVE (ONLY IMAGE PART FIXED)
 // ===============================
 async function handleSaveProduct(form) {
   const name = form.productName.value.trim();
   const category = form.productCategory.value.trim();
   const status = form.productStatus.value;
-  const image = form.productImageUrl?.value || DEFAULT_IMAGE;
+  const file = form.productImage?.files?.[0];
 
   if (!name || !category) {
     alert("Please fill all required fields");
     return;
+  }
+
+  let image = DEFAULT_IMAGE;
+
+  if (file) {
+    image = await uploadImageToImageBB(file);
   }
 
   const data = {
@@ -177,8 +204,6 @@ function loadProducts() {
 }
 
 // ===============================
-// ✅ FIX: EDIT PRODUCT
-// ===============================
 async function editProduct(id) {
   const doc = await firebase.firestore().collection("products").doc(id).get();
   if (!doc.exists) return;
@@ -194,8 +219,6 @@ async function editProduct(id) {
   switchTab("products");
 }
 
-// ===============================
-// ✅ FIX: DELETE PRODUCT
 // ===============================
 async function deleteProduct(id) {
   if (!confirm("Delete this product?")) return;
