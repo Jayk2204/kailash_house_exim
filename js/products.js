@@ -35,7 +35,9 @@ function fetchProducts(){
         ...doc.data()
       }));
 
-      filteredProducts = allProducts.filter(p => p.status === "active");
+filteredProducts = sortProductsByPriority(
+  allProducts.filter(p => p.status === "active")
+);
       currentPage = 1;
       renderProducts();
     });
@@ -141,3 +143,17 @@ inquiryForm?.addEventListener("submit", async e=>{
 
 /* ================= INIT ================= */
 fetchProducts();
+function sortProductsByPriority(products) {
+  const priority = ["makhana", "ashwagandha"];
+
+  return [...products].sort((a, b) => {
+    const aIndex = priority.indexOf(a.name?.toLowerCase());
+    const bIndex = priority.indexOf(b.name?.toLowerCase());
+
+    if (aIndex === -1 && bIndex === -1) return 0;
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+
+    return aIndex - bIndex;
+  });
+}
