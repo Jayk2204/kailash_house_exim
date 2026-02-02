@@ -11,6 +11,8 @@ let currentInquiryPage = 1;
 const INQUIRIES_PER_PAGE = 3;
 let filteredInquiries = [];
 let allInquiries = [];
+let existingImageUrl = null;
+
 
 // 🔐 ImageBB API KEY (PASTE YOURS)
 const IMGBB_API_KEY = "c2a57968ac9e3f5cf23caea37d08df2e";
@@ -138,19 +140,19 @@ async function handleSaveProduct(form) {
   const name = form.productName.value.trim();
   const category = form.productCategory.value.trim();
   const status = form.productStatus.value;
-const fileInput =
-  form.productImage ||
-  document.getElementById("productImage");
 
-const file = fileInput?.files?.[0];
+  const fileInput =
+    form.productImage ||
+    document.getElementById("productImage");
 
+  const file = fileInput?.files?.[0];
 
   if (!name || !category) {
     alert("Please fill all required fields");
     return;
   }
 
-  let image = DEFAULT_IMAGE;
+  let image = existingImageUrl || DEFAULT_IMAGE;
 
   if (file) {
     image = await uploadImageToImageBB(file);
@@ -176,6 +178,7 @@ const file = fileInput?.files?.[0];
 
   form.reset();
   imagePreview.innerHTML = "";
+  existingImageUrl = null; // ✅ reset
   switchTab("products");
 }
 
@@ -215,14 +218,17 @@ async function editProduct(id) {
 
   const p = doc.data();
   editingProductId = id;
+  existingImageUrl = p.image || DEFAULT_IMAGE; // ✅ IMPORTANT
 
   addProductForm.productName.value = p.name;
   addProductForm.productCategory.value = p.category;
   addProductForm.productStatus.value = p.status;
-  imagePreview.innerHTML = `<img src="${p.image || DEFAULT_IMAGE}">`;
+
+  imagePreview.innerHTML = `<img src="${existingImageUrl}">`;
 
   switchTab("products");
 }
+
 
 // ===============================
 async function deleteProduct(id) {
