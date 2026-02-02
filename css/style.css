@@ -2271,3 +2271,46 @@ body.modal-open{overflow:hidden}
         height: 75px;
     }
 }
+.footer-map {
+    margin-top: 15px;
+}
+
+.footer-map h4 {
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.footer-map iframe {
+    border-radius: 8px;
+    filter: grayscale(1);
+}
+.footer-map-link {
+    color: #4da6ff;
+    text-decoration: none;
+}
+
+.footer-map-link:hover {
+    text-decoration: underline;
+}
+.footer-map {
+    margin-top: 15px;
+}
+
+.footer-map h4 {
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.clickable-map a {
+    display: block;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.clickable-map iframe {
+    pointer-events: none; /* 🔥 THIS IS THE KEY */
+    width: 100%;
+    border-radius: 8px;
+}
