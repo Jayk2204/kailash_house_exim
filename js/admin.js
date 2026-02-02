@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupForms();
   setupImagePreview();
 
-  // filter
   document.getElementById("statusFilter")?.addEventListener("change", e => {
     const v = e.target.value;
 
@@ -48,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPaginatedInquiries();
   });
 
-  // search
   document.getElementById("searchInquiries")?.addEventListener("input", e => {
     const v = e.target.value.toLowerCase();
     filteredInquiries = allInquiries.filter(q =>
@@ -113,6 +111,43 @@ function setupForms() {
 }
 
 // ===============================
+// ✅ FIX: MISSING FUNCTION
+// ===============================
+async function handleSaveProduct(form) {
+  const name = form.productName.value.trim();
+  const category = form.productCategory.value.trim();
+  const status = form.productStatus.value;
+  const image = form.productImageUrl?.value || DEFAULT_IMAGE;
+
+  if (!name || !category) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  const data = {
+    name,
+    category,
+    status,
+    image,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  const ref = firebase.firestore().collection("products");
+
+  if (editingProductId) {
+    await ref.doc(editingProductId).update(data);
+    editingProductId = null;
+  } else {
+    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+    await ref.add(data);
+  }
+
+  form.reset();
+  imagePreview.innerHTML = "";
+  switchTab("products");
+}
+
+// ===============================
 // PRODUCTS
 // ===============================
 function loadProducts() {
@@ -142,6 +177,32 @@ function loadProducts() {
 }
 
 // ===============================
+// ✅ FIX: EDIT PRODUCT
+// ===============================
+async function editProduct(id) {
+  const doc = await firebase.firestore().collection("products").doc(id).get();
+  if (!doc.exists) return;
+
+  const p = doc.data();
+  editingProductId = id;
+
+  addProductForm.productName.value = p.name;
+  addProductForm.productCategory.value = p.category;
+  addProductForm.productStatus.value = p.status;
+  imagePreview.innerHTML = `<img src="${p.image || DEFAULT_IMAGE}">`;
+
+  switchTab("products");
+}
+
+// ===============================
+// ✅ FIX: DELETE PRODUCT
+// ===============================
+async function deleteProduct(id) {
+  if (!confirm("Delete this product?")) return;
+  await firebase.firestore().collection("products").doc(id).delete();
+}
+
+// ===============================
 // INQUIRIES (CRM)
 // ===============================
 function loadInquiries() {
@@ -160,6 +221,7 @@ function loadInquiries() {
       renderRecentInquiries(allInquiries);
     });
 }
+
 
 // ===============================
 function renderPaginatedInquiries() {
