@@ -260,12 +260,12 @@
                                     <div class="form-group">
                                         <label for="productName">Product Name *</label>
                                         <input type="text" id="productName" required 
-                                               placeholder="e.g., Makhana Nuts">
+                                               placeholder="e.g., Makhana Nuts" name="productName">
                                     </div>
                                     
                                     <div class="form-group">
                                         <label for="productCategory">Category *</label>
-                                        <select id="productCategory" required>
+                                        <select id="productCategory" name="productCategory" required>
                                             <option value="">Select Category</option>
                                             <option value="nuts">Nuts</option>
                                             <option value="powders">Herbal Powders</option>
@@ -285,7 +285,7 @@
                                 <div class="form-group">
                                     <label for="productImage">Product Image</label>
                                     <div class="image-upload">
-                                        <input type="file" id="productImage" accept="image/*">
+                                        <input type="file" id="productImage" accept="image/*"name="productImage">
                                         <label for="productImage" class="upload-btn">
                                             <i class="fas fa-cloud-upload-alt"></i>
                                             <span>Choose Image</span>
@@ -306,7 +306,7 @@
                                 
                                 <div class="form-group">
                                     <label for="productStatus">Status</label>
-                                    <select id="productStatus">
+                                    <select id="productStatus" name="productStatus">
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
                                     </select>

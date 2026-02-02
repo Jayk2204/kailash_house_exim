@@ -226,7 +226,8 @@ async function editProduct(id) {
 
   imagePreview.innerHTML = `<img src="${existingImageUrl}">`;
 
-  switchTab("products");
+  switchTab("add-product");
+
 }
 
 
