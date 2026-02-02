@@ -1,3 +1,4 @@
+
 const db = firebase.firestore();
 
 let allProducts = [];
@@ -64,7 +65,7 @@ function renderProducts(){
     card.innerHTML=`
       <div class="product-img">
         <img src="${p.image?.url||p.image}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80'">
-        <div class="product-category">${p.category.toUpperCase()}</div>
+<div class="product-category">${(p.category || "").toUpperCase()}</div>
       </div>
       <div class="product-info">
         <h3>${p.name}</h3>
@@ -105,10 +106,11 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 productSearch?.addEventListener("input",e=>{
   const t = e.target.value.toLowerCase();
   filteredProducts = allProducts.filter(p =>
-    p.name.toLowerCase().includes(t) ||
-    p.description.toLowerCase().includes(t) ||
-    p.category.toLowerCase().includes(t)
-  );
+  p.name?.toLowerCase().includes(t) ||
+  p.description?.toLowerCase().includes(t) ||
+  p.category?.toLowerCase().includes(t)
+);
+
   currentPage=1;
   renderProducts();
 });
@@ -144,16 +146,21 @@ inquiryForm?.addEventListener("submit", async e=>{
 /* ================= INIT ================= */
 fetchProducts();
 function sortProductsByPriority(products) {
-  const priority = ["makhana", "ashwagandha"];
+  const makhanaId = "33lCmbUxriLuValE0YG8";
 
   return [...products].sort((a, b) => {
-    const aIndex = priority.indexOf(a.name?.toLowerCase());
-    const bIndex = priority.indexOf(b.name?.toLowerCase());
+    // 1️⃣ Makhana by ID (highest priority)
+    if (a.id === makhanaId) return -1;
+    if (b.id === makhanaId) return 1;
 
-    if (aIndex === -1 && bIndex === -1) return 0;
-    if (aIndex === -1) return 1;
-    if (bIndex === -1) return -1;
+    // 2️⃣ Ashwagandha by name (fallback-safe)
+    const aIsAsh = a.name?.toLowerCase().includes("ashwagandha");
+    const bIsAsh = b.name?.toLowerCase().includes("ashwagandha");
 
-    return aIndex - bIndex;
+    if (aIsAsh && !bIsAsh) return -1;
+    if (!aIsAsh && bIsAsh) return 1;
+
+    // 3️⃣ rest normal
+    return 0;
   });
 }
