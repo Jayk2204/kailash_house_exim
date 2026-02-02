@@ -138,7 +138,12 @@ async function handleSaveProduct(form) {
   const name = form.productName.value.trim();
   const category = form.productCategory.value.trim();
   const status = form.productStatus.value;
-  const file = form.productImage?.files?.[0];
+const fileInput =
+  form.productImage ||
+  document.getElementById("productImage");
+
+const file = fileInput?.files?.[0];
+
 
   if (!name || !category) {
     alert("Please fill all required fields");
