@@ -76,7 +76,7 @@ function renderProducts(){
             Inquiry
           </button>
           <a class="btn btn-secondary btn-small"
-             href="https://wa.me/8780565907?text=Inquiry%20for%20${encodeURIComponent(p.name)}">
+             href="https://wa.me/+918780565907?text=Inquiry%20for%20${encodeURIComponent(p.name)}">
              WhatsApp
           </a>
         </div>
