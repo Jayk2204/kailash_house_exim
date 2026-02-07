@@ -2425,3 +2425,31 @@ body.modal-open{overflow:hidden}
         text-align: center;
     }
 }
+/* Mobile Navigation Fix */
+@media (max-width: 768px) {
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: #1a1a2e;
+        padding: 80px 30px;
+        transition: right 0.3s ease;
+        z-index: 999; /* This fixes the hiding issue */
+    }
+    
+    .nav-menu.active {
+        right: 0;
+    }
+    
+    .nav-menu ul {
+        flex-direction: column;
+        gap: 25px;
+    }
+    
+    .mobile-toggle {
+        display: block;
+        z-index: 1000;
+    }
+}
