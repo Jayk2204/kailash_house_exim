@@ -9,8 +9,12 @@ let editingProductId = null;
 // pagination
 let currentInquiryPage = 1;
 const INQUIRIES_PER_PAGE = 3;
+let productInquiries = [];
+
 let filteredInquiries = [];
 let allInquiries = [];
+let exportInquiries = [];
+
 let existingImageUrl = null;
 
 
@@ -76,6 +80,8 @@ function setupPasswordProtection() {
       adminPanel.style.display = "block";
       loadProducts();
       loadInquiries();
+      loadExportInquiries(); // 🔥 ADD THIS
+
     } else {
       passwordError.textContent = "❌ Incorrect password";
     }
@@ -257,8 +263,14 @@ function loadInquiries() {
     .collection("inquiries")
     .orderBy("createdAt", "desc")
     .onSnapshot(snap => {
-      allInquiries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      filteredInquiries = [...allInquiries];
+      productInquiries = snap.docs.map(d => ({
+  id: d.id,
+  ...d.data(),
+  source: "product" // 🔖 mark as product inquiry
+}));
+
+mergeAllInquiries(); // 🔥 merge with export
+
       currentInquiryPage = 1;
 
       renderPaginatedInquiries();
@@ -284,35 +296,83 @@ function renderInquiries(data) {
   data.forEach(q => {
     if (q.status !== "completed") pending++;
 
-    const phone = q.phone?.replace(/\D/g, "");
-    const wpMsg = encodeURIComponent(`Hello ${q.name}, regarding ${q.productName}`);
+    const phone = q.phone?.replace(/\D/g, "") || "";
+
+    const isExport = q.source === "export";
+
+    const productName = isExport
+      ? (q.productInterest || q.productName || "Export Inquiry")
+      : (q.productName || "Product Inquiry");
+
+    const qty = isExport ? "-" : (q.qty || "-");
+
+    const wpMsg = encodeURIComponent(
+      `Hello ${q.name}, regarding your ${isExport ? "export inquiry" : "product inquiry"} for ${productName}`
+    );
 
     html += `
       <div class="inquiry-item ${q.read ? "" : "unread"}">
         <div class="inquiry-header">
           <div class="inquiry-meta">
-            <h4>${q.productName}</h4>
-            <div class="inquiry-date">${q.createdAt?.toDate().toLocaleString()}</div>
+            <h4>
+              ${productName}
+              <span class="badge ${isExport ? "export" : "product"}">
+                ${isExport ? "Export" : "Product"}
+              </span>
+            </h4>
+            <div class="inquiry-date">
+              ${q.createdAt?.toDate ? q.createdAt.toDate().toLocaleString() : "-"}
+            </div>
           </div>
+
           <div class="inquiry-actions">
-            ${q.status !== "completed" ? `
-              <button class="btn btn-small btn-secondary" onclick="markAsRead('${q.id}')">Mark Read</button>
-              <button class="btn btn-small btn-primary" onclick="markCompleted('${q.id}')">Completed</button>
-            ` : `<span class="status completed">Completed</span>`}
+            ${
+              q.status !== "completed"
+                ? `
+                  <button class="btn btn-small btn-secondary"
+                    onclick="markAsRead('${q.id}','${q.source}')">
+                    Mark Read
+                  </button>
+                  <button class="btn btn-small btn-primary"
+                    onclick="markCompleted('${q.id}','${q.source}')">
+                    Completed
+                  </button>
+                `
+                : `<span class="status completed">Completed</span>`
+            }
+
             <a class="btn btn-small btn-secondary" target="_blank"
-               href="https://wa.me/${phone}?text=${wpMsg}">WhatsApp</a>
+              href="https://wa.me/${phone}?text=${wpMsg}">
+              WhatsApp
+            </a>
           </div>
         </div>
+
         <div class="inquiry-body">
-          <p><strong>Name:</strong> ${q.name}</p>
-          <p><strong>Phone:</strong> ${q.phone}</p>
-          <p><strong>Qty:</strong> ${q.qty}</p>
+          <p><strong>Name:</strong> ${q.name || "-"}</p>
+          <p><strong>Email:</strong> ${q.email || "-"}</p>
+          <p><strong>Phone:</strong> ${q.phone || "-"}</p>
+
+          ${
+            isExport
+              ? `
+                <p><strong>Country:</strong> ${q.country || "-"}</p>
+                <p><strong>Product of Interest:</strong> ${q.productInterest || "-"}</p>
+              `
+              : `
+                <p><strong>Qty:</strong> ${qty}</p>
+              `
+          }
+
           <p><strong>Message:</strong> ${q.message || "-"}</p>
         </div>
-      </div>`;
+      </div>
+    `;
   });
 
-  inquiriesList.innerHTML = html || `<div class="empty-state">No inquiries</div>`;
+  inquiriesList.innerHTML =
+    html || `<div class="empty-state">No inquiries</div>`;
+
   totalInquiriesCount.textContent = filteredInquiries.length;
   inquiryCountBadge.textContent = pending;
 }
@@ -341,20 +401,22 @@ function prevInquiryPage() {
 }
 
 // ===============================
-function markAsRead(id) {
-  firebase.firestore().collection("inquiries").doc(id).update({
-    read: true,
-    status: "pending"
+function markAsRead(id, source) {
+  const col = source === "export" ? "export_inquiries" : "inquiries";
+  firebase.firestore().collection(col).doc(id).update({
+    read: true
   });
 }
 
-function markCompleted(id) {
-  firebase.firestore().collection("inquiries").doc(id).update({
+function markCompleted(id, source) {
+  const col = source === "export" ? "export_inquiries" : "inquiries";
+  firebase.firestore().collection(col).doc(id).update({
     status: "completed",
     read: true,
     completedAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 }
+
 
 // ===============================
 function updateDashboard(data) {
@@ -418,3 +480,39 @@ function openInquiryFilter(type) {
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
 window.switchTab = switchTab;
+// ===============================
+// LOAD EXPORT INQUIRIES (ADDITIVE)
+// ===============================
+function loadExportInquiries() {
+  firebase.firestore()
+    .collection("export_inquiries")
+    .orderBy("createdAt", "desc")
+    .onSnapshot(snap => {
+      exportInquiries = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+        source: "export", // 🔖 IMPORTANT FLAG
+        productName: d.data().productInterest || "Export Inquiry",
+        qty: "-", // export doesn’t have qty
+        read: d.data().read || false,
+        status: d.data().status || "new"
+      }));
+
+      mergeAllInquiries();
+    });
+}
+function mergeAllInquiries() {
+  allInquiries = [...productInquiries, ...exportInquiries]
+    .sort((a, b) => {
+      const t1 = a.createdAt?.toMillis?.() || 0;
+      const t2 = b.createdAt?.toMillis?.() || 0;
+      return t2 - t1;
+    });
+
+  filteredInquiries = [...allInquiries];
+  currentInquiryPage = 1;
+
+  renderPaginatedInquiries();
+  updateDashboard(allInquiries);
+  renderRecentInquiries(allInquiries);
+}

@@ -1,4 +1,16 @@
 // Mobile Navigation Toggle
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
+  authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
+  projectId: "kailash-house-exim-cfcb1",
+  storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
+  messagingSenderId: "912462708660",
+  appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1",
+  measurementId: "G-XQN54W4R8E"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 const hamburger = document.querySelector('.mobile-toggle');
 const navMenu = document.querySelector('.nav-menu');
 
@@ -70,26 +82,49 @@ function loadFeaturedProducts() {
         });
     }
 }
-
-// Form Submission
+// ===============================
+// Export Inquiry Form Submission
+// ===============================
 const quoteForm = document.getElementById('quoteForm');
+
 if (quoteForm) {
-    quoteForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form values
-        const formData = new FormData(this);
-        const name = this.querySelector('input[type="text"]').value;
-        const email = this.querySelector('input[type="email"]').value;
-        const product = this.querySelector('select').value;
-        
-        // Show success message
-        alert(`Thank you ${name}! Your export inquiry for ${product} has been received. Our export team will contact you at ${email} within 24 hours.`);
-        
-        // Reset form
-        this.reset();
-    });
+  quoteForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name")?.value.trim();
+    const email = document.getElementById("email")?.value.trim();
+    const phone = document.getElementById("phone")?.value.trim();
+    const country = document.getElementById("country")?.value.trim();
+    const productInterest = document.getElementById("productInterest")?.value;
+    const message = document.getElementById("message")?.value.trim();
+
+    if (!name || !email || !phone || !country || !productInterest) {
+      alert("❌ Please fill all required fields");
+      return;
+    }
+
+    try {
+      await db.collection("export_inquiries").add({
+        name,
+        email,
+        phone,
+        country,
+        productInterest,
+        message,
+        status: "new",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert(`✅ Thank you ${name}! Your export inquiry has been submitted.`);
+      quoteForm.reset();
+
+    } catch (error) {
+      console.error(error);
+      alert("❌ Failed to submit inquiry. Please try again.");
+    }
+  });
 }
+
 
 // Back to Top Button
 const backToTopBtn = document.querySelector('.back-to-top');
