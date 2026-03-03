@@ -74,18 +74,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ===============================
 function setupPasswordProtection() {
-  loginBtn.onclick = () => {
-    if (adminPassword.value === ADMIN_PASSWORD) {
-      passwordScreen.style.display = "none";
-      adminPanel.style.display = "block";
+
+  const loginBtn = document.getElementById("loginBtn");
+  const adminPassword = document.getElementById("adminPassword");
+  const passwordScreen = document.getElementById("passwordScreen");
+  const adminPanel = document.getElementById("adminPanel");
+  const passwordErrorEl = document.getElementById("passwordError");
+
+  const ADMIN_PASSWORD = "kailash123";
+
+  if (!loginBtn) return;
+
+  loginBtn.addEventListener("click", function () {
+
+    const password = adminPassword ? adminPassword.value.trim() : "";
+
+    if (!password) {
+      if (passwordErrorEl) {
+        passwordErrorEl.textContent = "⚠ Please enter password";
+      }
+      return;
+    }
+
+    if (password === ADMIN_PASSWORD) {
+
+      if (passwordScreen) passwordScreen.style.display = "none";
+      if (adminPanel) adminPanel.style.display = "block";
+
       loadProducts();
       loadInquiries();
-      loadExportInquiries(); // 🔥 ADD THIS
+      loadExportInquiries();
+
+      if (passwordErrorEl) {
+        passwordErrorEl.textContent = "";
+      }
 
     } else {
-      passwordError.textContent = "❌ Incorrect password";
+      if (passwordErrorEl) {
+        passwordErrorEl.textContent = "❌ Incorrect password";
+      }
     }
-  };
+  });
 }
 
 // ===============================

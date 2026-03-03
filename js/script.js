@@ -1,15 +1,21 @@
 // Mobile Navigation Toggle
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
-  authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
-  projectId: "kailash-house-exim-cfcb1",
-  storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
-  messagingSenderId: "912462708660",
-  appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1",
-  measurementId: "G-XQN54W4R8E"
-};
-firebase.initializeApp(firebaseConfig);
+// Only initialize once
+if (!firebase.apps.length) {
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBAE6wJbsekWN46wC5HgyMyRQ5D9I9SHZM",
+    authDomain: "kailash-house-exim-cfcb1.firebaseapp.com",
+    projectId: "kailash-house-exim-cfcb1",
+    storageBucket: "kailash-house-exim-cfcb1.firebasestorage.app",
+    messagingSenderId: "912462708660",
+    appId: "1:912462708660:web:e1cefecdc94ce6d88dbce1",
+    measurementId: "G-XQN54W4R8E"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+}
+
 const db = firebase.firestore();
 const hamburger = document.querySelector('.mobile-toggle');
 const navMenu = document.querySelector('.nav-menu');

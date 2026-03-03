@@ -73,8 +73,10 @@
                 <button id="loginBtn" class="btn btn-primary btn-block">
                     <i class="fas fa-lock"></i> Access Admin Panel
                 </button>
+                <div id="passwordError" style="color:red; margin-top:10px;"></div>
               
             </div>
+         
         </div>
     </div>
 
@@ -441,10 +443,10 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  const ADMIN_PASSWORD = "kailash123";
+  
 </script>
 
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=3"></script>
 
     
     <!-- Your JavaScript will be loaded here separately -->
